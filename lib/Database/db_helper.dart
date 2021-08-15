@@ -10,6 +10,7 @@ class DatabaseHelper {
   static final columnId = '_id';
   static final moviename = 'moviename';
   static final director = 'director';
+  static final imgstring = 'imgstring';
 
 
   // make this a singleton class
@@ -39,7 +40,8 @@ class DatabaseHelper {
           CREATE TABLE $table (
           $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
           $moviename TEXT,
-          $director TEXT
+          $director TEXT,
+          $imgstring TEXT
           
           )
           ''');

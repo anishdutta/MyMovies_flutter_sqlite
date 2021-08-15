@@ -1,14 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Mymovies.dart';
 import 'constants.dart';
+import 'signin.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final _auth = FirebaseAuth.instance;
+  Future<User> getCurrentUser() async {
+    User currentUser;
+    currentUser = (await _auth.currentUser)!;
+    return currentUser;
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,7 +33,18 @@ class MyApp extends StatelessWidget {
     accentColor: kPrimaryColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
-    home: Mymovies(),
+
+    home: FutureBuilder(
+      future: getCurrentUser(),
+      builder: (context, snapshot){
+        if(snapshot.hasData){
+          return Mymovies();
+        }
+        else{
+          return Signin();
+        }
+      },
+    ),
     );
   }
 }
