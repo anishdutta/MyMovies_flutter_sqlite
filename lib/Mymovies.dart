@@ -111,7 +111,7 @@ class _MymoviesState extends State<Mymovies> {
                         backgroundImage: NetworkImage(
                             '${currentUser!.photoURL}'),
                         backgroundColor: Colors.transparent,
-                        radius: 12,
+                        radius: 15,
                       ),
                       SizedBox(
                         width: 12,
@@ -536,7 +536,7 @@ class _MymoviesState extends State<Mymovies> {
                                     ),
                                     Positioned(
                                       top: 0.06.sw,
-                                      right: 10,
+                                      right: 20,
                                       child: SizedBox(
                                         height: 100,
                                         width: 230,
@@ -544,16 +544,16 @@ class _MymoviesState extends State<Mymovies> {
 
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
-                                            Spacer(),
+
                                             Padding(
                                               padding: const EdgeInsets.symmetric(
                                                   horizontal: kDefaultPadding),
                                               child: Text(
                                                 "${mymovielist[index]['moviename']}",
                                                 style: TextStyle(
-                                                    fontSize: 0.038.sw,
+                                                    fontSize: 0.03.sw,
                                                     color: kTextColor,
                                                     fontWeight: FontWeight.bold),
                                               ),
@@ -567,7 +567,7 @@ class _MymoviesState extends State<Mymovies> {
                                               child: Text(
                                                 "Directed by ${mymovielist[index]['director']}",
                                                 style: TextStyle(
-                                                  fontSize: 0.034.sw,
+                                                  fontSize: 0.03.sw,
                                                   color: Color(0xFF76787F),
                                                 ),
                                               ),
