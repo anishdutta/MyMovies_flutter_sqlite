@@ -29,10 +29,14 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
         // We set Poppins as our default font
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-    primaryColor: kPrimaryColor,
-    accentColor: kPrimaryColor,
-    visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: kPrimaryColor,
+        accentColor: kPrimaryColor,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
+    routes: {
+          Mymovies.id: (context) =>Mymovies(),
+          Signin.id: (context) => Signin()
+    },
 
     home: FutureBuilder(
       future: getCurrentUser(),

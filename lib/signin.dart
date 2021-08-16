@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_movies/constants.dart';
-import 'signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Mymovies.dart';
 
@@ -23,7 +22,27 @@ class _SigninState extends State<Signin> {
   int key = 0;
   bool showSpinner = false;
 
-  final _auth = FirebaseAuth.instance;
+  GoogleSignInAccount? _currentUser;
+
+  var _auth = FirebaseAuth.instance;
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
 
   @override
   void initState() {
@@ -41,186 +60,85 @@ class _SigninState extends State<Signin> {
       backgroundColor: kBackgroundColor,
         resizeToAvoidBottomInset: false,
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              SizedBox(
-                height: 55,
-              ),
-              Container(
-                child: Stack(
-                  children: <Widget>[
-                    Container(
 
-                      padding: EdgeInsets.fromLTRB(0.0, 60.0, 0.0, 0.0),
-                      child: Image.network('https://c.tenor.com/n3WbodS_C2YAAAAi/appventure-myappventure.gif',
-                        width: 100,),
-
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(16.0, 175.0, 0.0, 0.0),
-                      child: Text('My Movies',
-                          style: TextStyle(
-                              fontSize: 50.0, fontWeight: FontWeight.bold)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(220.0, 175.0, 0.0, 0.0),
-                      child: Text('.',
-                          style: TextStyle(
-                              fontSize: 50.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green)),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                  padding: EdgeInsets.only(top: 35.0, left: 20.0, right: 20.0),
+              Center(
+                child: Container(
                   child: Column(
                     children: <Widget>[
-                      TextField(
-
-                        decoration: InputDecoration(
-                            labelText: 'EMAIL',
-                            labelStyle: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green))),
-                        onChanged: (value){
-                          email = value;
-                        },
-                      ),
-                      SizedBox(height: 20.0),
-                      TextField(
-                        decoration: InputDecoration(
-                            labelText: 'PASSWORD',
-                            labelStyle: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: kSecondaryColor))),
-                        obscureText: true,
-                        onChanged: (value){
-                          password = value;
-                        },
-                      ),
-                      SizedBox(height: 5.0),
                       Container(
-                        alignment: Alignment(1.0, 0.0),
-                        padding: EdgeInsets.only(top: 15.0, left: 20.0),
-                        child: InkWell(
-                          child: Text(
-                            'Forgot Password',
+                        padding: EdgeInsets.fromLTRB(0.0, 0.0, 25.0, 0.0),
+                        child: Image.network('https://c.tenor.com/n3WbodS_C2YAAAAi/appventure-myappventure.gif',
+                          width: 150),
+
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+                        child: Text('My_Movies',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: kSecondaryColor,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Montserrat',
-                                decoration: TextDecoration.underline),
-                          ),
-                        ),
+                              color: kTextLightColor,
+                                fontSize: 40.0, fontWeight: FontWeight.bold)),
                       ),
-                      SizedBox(height: 40.0),
                       Container(
-                        height: 40.0,
-                        child: Material(
-                          borderRadius: BorderRadius.circular(20.0),
-                          shadowColor: kSecondaryColor,
-                          color: kSecondaryColor,
-                          elevation: 7.0,
-                          child: GestureDetector(
-                            onTap: () async{
+                        // padding: EdgeInsets.fromLTRB(220.0, 175.0, 0.0, 0.0),
+                        child: Text('Login now to add your favorite movie!',
+                            style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                                color: kSecondaryColor)),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Center(
+                child: Container(
 
-                              setState(() {
-                                showSpinner = true;
-                              });
+                  width: 300,
+                  child: Column(
+                    children: [
+                      MaterialButton(
+                        onPressed: () async {
+                          signInWithGoogle().then((value) => {
+                            Navigator.of(context).pushNamedAndRemoveUntil(Mymovies.id, (Route<dynamic> route) => false)
+                          });
+                        },
+                        height: 60,
 
-                              try {
-                                final newUser = await _auth.signInWithEmailAndPassword(
-                                    email: email, password: password);
-
-                                if (newUser != null) {
-                                  Fluttertoast.showToast(
-                                      msg: "Welcome",
-                                      toastLength: Toast.LENGTH_SHORT,
-                                      gravity: ToastGravity.BOTTOM,
-                                      timeInSecForIosWeb: 1,
-                                      backgroundColor: kSecondaryColor,
-                                      textColor: kTextColor,
-                                      fontSize: 16.0
-                                  ).then((value) => {
-                                  Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Mymovies()),
-                                  )
-                                  });
-                                }
-                              } catch (e) {
-                                Fluttertoast.showToast(
-                                    msg: "$e",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    timeInSecForIosWeb: 1,
-                                    backgroundColor: kSecondaryColor,
-                                    textColor: kTextColor,
-                                    fontSize: 16.0
-                                );
-                                print(e);
-
-
-                              }
-                            },
-                            child: Center(
-                              child: Text(
-                                'LOGIN',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Montserrat'),
-                              ),
-                            ),
+                        color: kSecondaryColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(13)),
+                        elevation: 10,
+                        child: ListTile(
+                          leading: Image.network(
+                            'https://www.transparentpng.com/thumb/google-logo/google-logo-png-icon-free-download-SUF63j.png',
+                            height: 33,
+                            width: 33,
+                          ),
+                          title: Text(
+                            'Sign In with Google',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                       ),
-                      SizedBox(height: 20.0),
-
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text('This App is for the assignment for Yellow Class\'s campus drive 2022 ',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.bold,
+                              color: kTextLightColor)),
                     ],
-                  )),
-              SizedBox(height: 15.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'New to My Movie ?',
-                    style: TextStyle(fontFamily: 'Montserrat'),
                   ),
-                  SizedBox(width: 5.0),
-                  InkWell(
-                    onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     PageTransition(
-                      //       type: PageTransitionType.fade,
-                      //       child: SignupPage(),
-                      //     ));
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Signup()),
-                      );
-                    },
-                    child: Text(
-                      'Register',
-                      style: TextStyle(
-                          color: kSecondaryColor,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                    ),
-                  )
-                ],
-              )
+                ),
+              ),
+
             ],
           ),
         );
